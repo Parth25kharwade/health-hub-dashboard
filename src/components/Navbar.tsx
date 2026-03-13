@@ -14,7 +14,7 @@ const Navbar = ({ title = "Dashboard" }: NavbarProps) => {
   const { user, logout } = useAuth();
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const initials = user?.username?.slice(0, 2).toUpperCase() ?? "MC";
+  const initials = user?.fullName?.slice(0, 2).toUpperCase() ?? "MC";
 
   return (
     <header className="h-16 flex items-center justify-between px-6 bg-card border-b shrink-0">
@@ -44,7 +44,7 @@ const Navbar = ({ title = "Dashboard" }: NavbarProps) => {
                 <AvatarFallback className="gradient-primary text-primary-foreground text-xs font-bold">{initials}</AvatarFallback>
               </Avatar>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-semibold leading-none">{user?.username}</p>
+                <p className="text-sm font-semibold leading-none">{user?.fullName}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{user?.role}</p>
               </div>
               <ChevronDown className="w-4 h-4 text-muted-foreground" />

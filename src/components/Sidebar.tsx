@@ -29,7 +29,7 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
-  const navItems = user?.role === "DOCTOR" ? doctorNav : adminNav;
+  const navItems = user?.role === "ROLE_DOCTOR" ? doctorNav : adminNav;
 
   return (
     <motion.aside
@@ -60,7 +60,7 @@ const Sidebar = () => {
           <div className="flex items-center gap-2">
             <Stethoscope className="w-4 h-4 shrink-0" style={{ color: "hsl(var(--sidebar-primary))" }} />
             <div>
-              <p className="text-xs font-semibold text-sidebar-accent-foreground truncate">{user?.username}</p>
+              <p className="text-xs font-semibold text-sidebar-accent-foreground truncate">{user?.fullName}</p>
               <p className="text-xs" style={{ color: "hsl(var(--sidebar-primary))" }}>{user?.role}</p>
             </div>
           </div>

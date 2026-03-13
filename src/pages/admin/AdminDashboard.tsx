@@ -25,7 +25,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const hid = user?.hospitalId ?? "H001";
     getAdminDashboard(hid)
-      .then(r => setData(r.data))
+      .then(r => setData(r.data?.data ?? r.data))
       .catch(() => setData({ icuBeds: 24, staffWorkload: 78, equipmentUsage: 65, resourceStress: "HIGH" }));
   }, [user]);
 

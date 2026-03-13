@@ -11,7 +11,7 @@ const Alerts = () => {
 
   useEffect(() => {
     getDiagnosisAlerts()
-      .then(r => setAlerts(r.data || []))
+      .then(r => setAlerts(Array.isArray(r.data?.data) ? r.data.data : r.data?.data ?? []))
       .catch(() => setAlerts([
         { id: 1, patientName: "Alice Johnson", message: "Critical blood pressure: 180/110 mmHg", severity: "CRITICAL", time: "10 min ago", patientId: "P-001" },
         { id: 2, patientName: "Bob Smith", message: "O₂ saturation dropped to 89%", severity: "CRITICAL", time: "25 min ago", patientId: "P-002" },

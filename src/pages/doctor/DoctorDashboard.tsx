@@ -14,7 +14,14 @@ const DoctorDashboard = () => {
 
   useEffect(() => {
     Promise.all([getDoctorDashboard(), getDiagnosisAlerts()])
-      .then(([dash, al]) => { setData(dash.data); setAlerts(al.data || []); })
+      .then(([dash, al]) => {
+        // axios response: .data = envelope { success, message, data: {...} }
+        // so actual payload is .data.data
+        const dashPayload = dash.data?.data ?? dash.data;
+        const alertsPayload = al.data?.data;
+        setData(dashPayload);
+        setAlerts(Array.isArray(alertsPayload) ? alertsPayload : []);
+      })
       .catch(() => {
         setData({ totalPatients: 42, criticalAlerts: 3, recentDiagnoses: 8, recentRecords: 15 });
         setAlerts([

@@ -32,7 +32,7 @@ const queryClient = new QueryClient();
 const RootRedirect = () => {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  return <Navigate to={user?.role === "DOCTOR" ? "/doctor/dashboard" : "/admin/dashboard"} replace />;
+  return <Navigate to={user?.role === "ROLE_DOCTOR" ? "/doctor/dashboard" : "/admin/dashboard"} replace />;
 };
 
 const App = () => (
@@ -49,20 +49,20 @@ const App = () => (
             <Route path="/" element={<RootRedirect />} />
 
             {/* Doctor routes */}
-            <Route path="/doctor/dashboard" element={<ProtectedRoute allowedRoles={["DOCTOR"]}><DoctorDashboard /></ProtectedRoute>} />
-            <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={["DOCTOR"]}><Patients /></ProtectedRoute>} />
-            <Route path="/doctor/patients/:id" element={<ProtectedRoute allowedRoles={["DOCTOR"]}><PatientHistory /></ProtectedRoute>} />
-            <Route path="/doctor/history" element={<ProtectedRoute allowedRoles={["DOCTOR"]}><PatientHistory /></ProtectedRoute>} />
-            <Route path="/doctor/records/new" element={<ProtectedRoute allowedRoles={["DOCTOR"]}><CreateRecord /></ProtectedRoute>} />
-            <Route path="/doctor/ai-diagnosis" element={<ProtectedRoute allowedRoles={["DOCTOR"]}><AIDiagnosis /></ProtectedRoute>} />
-            <Route path="/doctor/alerts" element={<ProtectedRoute allowedRoles={["DOCTOR"]}><Alerts /></ProtectedRoute>} />
+            <Route path="/doctor/dashboard" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><DoctorDashboard /></ProtectedRoute>} />
+            <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><Patients /></ProtectedRoute>} />
+            <Route path="/doctor/patients/:id" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><PatientHistory /></ProtectedRoute>} />
+            <Route path="/doctor/history" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><PatientHistory /></ProtectedRoute>} />
+            <Route path="/doctor/records/new" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><CreateRecord /></ProtectedRoute>} />
+            <Route path="/doctor/ai-diagnosis" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><AIDiagnosis /></ProtectedRoute>} />
+            <Route path="/doctor/alerts" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><Alerts /></ProtectedRoute>} />
 
             {/* Admin routes */}
-            <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/icu" element={<ProtectedRoute allowedRoles={["ADMIN"]}><IcuManagement /></ProtectedRoute>} />
-            <Route path="/admin/staff" element={<ProtectedRoute allowedRoles={["ADMIN"]}><StaffManagement /></ProtectedRoute>} />
-            <Route path="/admin/prediction" element={<ProtectedRoute allowedRoles={["ADMIN"]}><ResourcePrediction /></ProtectedRoute>} />
-            <Route path="/admin/forecast" element={<ProtectedRoute allowedRoles={["ADMIN"]}><ForecastHistory /></ProtectedRoute>} />
+            <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/icu" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><IcuManagement /></ProtectedRoute>} />
+            <Route path="/admin/staff" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><StaffManagement /></ProtectedRoute>} />
+            <Route path="/admin/prediction" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><ResourcePrediction /></ProtectedRoute>} />
+            <Route path="/admin/forecast" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><ForecastHistory /></ProtectedRoute>} />
 
             <Route path="/unauthorized" element={<div className="flex items-center justify-center h-screen"><p className="text-muted-foreground">Unauthorized access.</p></div>} />
             <Route path="*" element={<NotFound />} />

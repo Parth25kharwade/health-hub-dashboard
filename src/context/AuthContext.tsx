@@ -1,7 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface User {
-  userId: string; username: string; role: string; hospitalId?: string; token: string;
+  userId: number;
+  fullName: string;
+  email: string;
+  role: string;
+  hospitalId?: number;
+  token: string;
 }
 
 interface AuthContextType {
@@ -17,8 +22,20 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
+    try {
+      const stored = localStorage.getItem("user");
+      if (!stored) return null;
+      const parsed = JSON.parse(stored);
+      // Clear stale sessions that have old role format (e.g. "DOCTOR" instead of "ROLE_DOCTOR")
+      if (parsed?.role && !parsed.role.startsWith("ROLE_")) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        return null;
+      }
+      return parsed;
+    } catch {
+      return null;
+    }
   });
 
   const login = (userData: User) => {
@@ -37,8 +54,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider value={{
       user, login, logout,
       isAuthenticated: !!user,
-      isDoctor: user?.role === "DOCTOR",
-      isAdmin: user?.role === "ADMIN",
+      isDoctor: user?.role === "ROLE_DOCTOR",
+      isAdmin: user?.role === "ROLE_ADMIN",
     }}>
       {children}
     </AuthContext.Provider>

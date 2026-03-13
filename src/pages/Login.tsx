@@ -9,7 +9,7 @@ import { Activity, Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Login = () => {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,9 +20,17 @@ const Login = () => {
     e.preventDefault();
     setLoading(true); setError("");
     try {
-      const { data } = await login(form);
-      authLogin({ ...data, token: data.token });
-      navigate(data.role === "DOCTOR" ? "/doctor/dashboard" : "/admin/dashboard");
+      const { data: res } = await login(form);
+      const { data } = res;
+      authLogin({
+        token: data.token,
+        userId: data.userId,
+        fullName: data.fullName,
+        email: data.email,
+        role: data.role,
+        hospitalId: data.hospitalId,
+      });
+      navigate(data.role === "ROLE_DOCTOR" ? "/doctor/dashboard" : "/admin/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || "Invalid credentials. Please try again.");
     } finally {
@@ -87,9 +95,9 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Username</Label>
-              <Input placeholder="johndoe" value={form.username}
-                onChange={e => setForm({ ...form, username: e.target.value })} required />
+              <Label>Email</Label>
+              <Input type="email" placeholder="john@hospital.com" value={form.email}
+                onChange={e => setForm({ ...form, email: e.target.value })} required />
             </div>
             <div className="space-y-1.5">
               <Label>Password</Label>

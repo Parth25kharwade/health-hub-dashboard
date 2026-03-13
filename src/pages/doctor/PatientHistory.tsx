@@ -18,7 +18,7 @@ const PatientHistory = () => {
 
   useEffect(() => {
     getPatientHistory(id!)
-      .then(r => setHistory(r.data || []))
+      .then(r => setHistory(Array.isArray(r.data?.data) ? r.data.data : r.data?.data ?? []))
       .catch(() => setHistory([
         { id: "h1", recordType: "CONSULTATION", title: "Initial Consultation", date: "2025-01-10", diagnosis: "Hypertension Stage 1", treatment: "Lifestyle modifications, low-sodium diet", medications: "Amlodipine 5mg", description: "Patient presented with elevated BP readings over 3 months." },
         { id: "h2", recordType: "LAB", title: "Blood Panel", date: "2025-02-01", diagnosis: "Mild Anemia", treatment: "Iron supplementation", medications: "Ferrous sulfate 325mg", description: "CBC showed low hemoglobin at 10.2 g/dL." },

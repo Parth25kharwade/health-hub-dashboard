@@ -17,7 +17,7 @@ const ForecastHistory = () => {
   useEffect(() => {
     const hid = user?.hospitalId ?? "H001";
     getForecastHistory(hid)
-      .then(r => setHistory(r.data || []))
+      .then(r => setHistory(Array.isArray(r.data?.data) ? r.data.data : r.data?.data ?? []))
       .catch(() => setHistory([
         { date: "Mar 1", stressLevel: "LOW", icuLoad: 45, staffLoad: 55, score: 25 },
         { date: "Mar 3", stressLevel: "MEDIUM", icuLoad: 62, staffLoad: 68, score: 50 },

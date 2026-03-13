@@ -13,13 +13,13 @@ const IcuManagement = () => {
   const { user } = useAuth();
   const [status, setStatus] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [form, setForm] = useState({ totalBeds: 0, occupiedBeds: 0, hospitalId: "" });
+  const [form, setForm] = useState<{ totalBeds: number; occupiedBeds: number; hospitalId: string | number }>({ totalBeds: 0, occupiedBeds: 0, hospitalId: "" });
   const [saving, setSaving] = useState(false);
 
   const fetchStatus = () => {
     const hid = user?.hospitalId ?? "H001";
     getIcuStatus(hid)
-      .then(r => setStatus(r.data))
+      .then(r => setStatus(r.data?.data ?? r.data))
       .catch(() => setStatus({ totalBeds: 30, occupiedBeds: 22, availableBeds: 8, occupancyRate: 73 }));
   };
 

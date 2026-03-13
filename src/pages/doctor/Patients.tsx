@@ -20,14 +20,14 @@ const Patients = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | number | null>(null);
   const [form, setForm] = useState<Patient>(emptyForm);
   const [saving, setSaving] = useState(false);
 
   const fetchPatients = () => {
     if (!user?.userId) return;
     getPatientsByDoctor(user.userId)
-      .then(r => setPatients(r.data || []))
+      .then(r => setPatients(Array.isArray(r.data?.data) ? r.data.data : r.data?.data ?? []))
       .catch(() => setPatients([
         { id: "1", firstName: "Alice", lastName: "Johnson", gender: "Female", age: 34, phone: "555-0101", emergencyContact: "555-0102" },
         { id: "2", firstName: "Bob", lastName: "Smith", gender: "Male", age: 52, phone: "555-0201", emergencyContact: "555-0202" },
