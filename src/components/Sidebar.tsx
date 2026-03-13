@@ -39,8 +39,13 @@ const Sidebar = () => {
       className="relative flex flex-col h-screen bg-sidebar overflow-hidden shrink-0"
       style={{ borderRight: "1px solid hsl(var(--sidebar-border))" }}
     >
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-16 shrink-0" style={{ borderBottom: "1px solid hsl(var(--sidebar-border))" }}>
+      {/* Logo — click to go to dashboard */}
+      <Link
+        to={user?.role === "ROLE_DOCTOR" ? "/doctor/dashboard" : "/admin/dashboard"}
+        className="flex items-center gap-3 px-4 h-16 shrink-0 hover:opacity-80 transition-opacity"
+        style={{ borderBottom: "1px solid hsl(var(--sidebar-border))" }}
+        title="Go to Dashboard"
+      >
         <div className="flex items-center justify-center w-9 h-9 rounded-xl gradient-primary shrink-0">
           <Activity className="w-5 h-5 text-white" />
         </div>
@@ -52,7 +57,7 @@ const Sidebar = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </Link>
 
       {/* Role badge */}
       {!collapsed && (
