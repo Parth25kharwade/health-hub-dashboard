@@ -12,7 +12,16 @@ import { Plus, Search, Edit2, Eye, Loader2, UserCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const emptyForm: Patient = { firstName: "", lastName: "", gender: "", age: 0, phone: "", emergencyContact: "" };
+const emptyForm: Patient = {
+  fullName: "",
+  dateOfBirth: "",
+  gender: "",
+  bloodGroup: "",
+  phone: "",
+  address: "",
+  emergencyContact: "",
+  emergencyPhone: "",
+};
 
 const Patients = () => {
   const { user } = useAuth();
@@ -28,11 +37,7 @@ const Patients = () => {
     if (!user?.userId) return;
     getPatientsByDoctor(user.userId)
       .then(r => setPatients(Array.isArray(r.data?.data) ? r.data.data : r.data?.data ?? []))
-      .catch(() => setPatients([
-        { id: "1", firstName: "Alice", lastName: "Johnson", gender: "Female", age: 34, phone: "555-0101", emergencyContact: "555-0102" },
-        { id: "2", firstName: "Bob", lastName: "Smith", gender: "Male", age: 52, phone: "555-0201", emergencyContact: "555-0202" },
-        { id: "3", firstName: "Carol", lastName: "White", gender: "Female", age: 28, phone: "555-0301", emergencyContact: "555-0302" },
-      ]))
+      .catch(() => setPatients([]))
       .finally(() => setLoading(false));
   };
 
@@ -44,14 +49,21 @@ const Patients = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true);
     try {
-      if (editingId) await updatePatient(editingId, form);
-      else await createPatient({ ...form, doctorId: user?.userId });
+      if (editingId) {
+        await updatePatient(editingId, form);
+      } else {
+        await createPatient({
+          ...form,
+          doctorId: user?.userId,
+          hospitalId: user?.hospitalId,
+        });
+      }
       fetchPatients(); setModalOpen(false);
     } catch { } finally { setSaving(false); }
   };
 
   const filtered = patients.filter(p =>
-    `${p.firstName} ${p.lastName}`.toLowerCase().includes(search.toLowerCase())
+    p.fullName?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -74,26 +86,40 @@ const Patients = () => {
                 <DialogTitle>{editingId ? "Edit Patient" : "Add New Patient"}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSave} className="space-y-4 mt-2">
+                <div className="space-y-1.5"><Label>Full Name</Label><Input value={form.fullName} onChange={e => setForm({ ...form, fullName: e.target.value })} required /></div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5"><Label>First Name</Label><Input value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} required /></div>
-                  <div className="space-y-1.5"><Label>Last Name</Label><Input value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} required /></div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label>Date of Birth</Label><Input type="date" value={form.dateOfBirth} onChange={e => setForm({ ...form, dateOfBirth: e.target.value })} required /></div>
                   <div className="space-y-1.5">
                     <Label>Gender</Label>
                     <Select value={form.gender} onValueChange={v => setForm({ ...form, gender: v })}>
                       <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Male">Male</SelectItem>
-                        <SelectItem value="Female">Female</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                        <SelectItem value="MALE">Male</SelectItem>
+                        <SelectItem value="FEMALE">Female</SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-1.5"><Label>Age</Label><Input type="number" value={form.age} onChange={e => setForm({ ...form, age: +e.target.value })} required /></div>
                 </div>
-                <div className="space-y-1.5"><Label>Phone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
-                <div className="space-y-1.5"><Label>Emergency Contact</Label><Input value={form.emergencyContact} onChange={e => setForm({ ...form, emergencyContact: e.target.value })} /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Blood Group</Label>
+                    <Select value={form.bloodGroup} onValueChange={v => setForm({ ...form, bloodGroup: v })}>
+                      <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                      <SelectContent>
+                        {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(bg => (
+                          <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5"><Label>Phone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required /></div>
+                </div>
+                <div className="space-y-1.5"><Label>Address</Label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label>Emergency Contact</Label><Input value={form.emergencyContact} onChange={e => setForm({ ...form, emergencyContact: e.target.value })} /></div>
+                  <div className="space-y-1.5"><Label>Emergency Phone</Label><Input value={form.emergencyPhone} onChange={e => setForm({ ...form, emergencyPhone: e.target.value })} /></div>
+                </div>
                 <div className="flex gap-2 justify-end pt-2">
                   <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
                   <Button type="submit" className="gradient-primary border-0 text-primary-foreground" disabled={saving}>
@@ -111,7 +137,7 @@ const Patients = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: "1px solid hsl(var(--border))" }}>
-                  {["Patient", "Gender", "Age", "Phone", "Emergency Contact", "Actions"].map(h => (
+                  {["Patient", "Gender", "Blood Group", "Phone", "Emergency Contact", "Actions"].map(h => (
                     <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
@@ -131,15 +157,21 @@ const Patients = () => {
                         <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center shrink-0">
                           <UserCircle2 className="w-5 h-5 text-white" />
                         </div>
-                        <span className="font-medium">{p.firstName} {p.lastName}</span>
+                        <div>
+                          <span className="font-medium">{p.fullName}</span>
+                          {p.patientCode && <p className="text-xs text-muted-foreground">{p.patientCode}</p>}
+                        </div>
                       </div>
                     </td>
                     <td className="px-5 py-3.5">
                       <Badge variant="secondary">{p.gender}</Badge>
                     </td>
-                    <td className="px-5 py-3.5 font-medium">{p.age} yrs</td>
+                    <td className="px-5 py-3.5 font-medium">{p.bloodGroup}</td>
                     <td className="px-5 py-3.5 text-muted-foreground">{p.phone}</td>
-                    <td className="px-5 py-3.5 text-muted-foreground">{p.emergencyContact}</td>
+                    <td className="px-5 py-3.5 text-muted-foreground">
+                      <div>{p.emergencyContact}</div>
+                      {p.emergencyPhone && <div className="text-xs">{p.emergencyPhone}</div>}
+                    </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1">
                         <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => openEdit(p)}>
