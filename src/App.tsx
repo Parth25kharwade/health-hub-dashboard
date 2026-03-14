@@ -64,7 +64,16 @@ const App = () => (
             <Route path="/admin/prediction" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><ResourcePrediction /></ProtectedRoute>} />
             <Route path="/admin/forecast" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><ForecastHistory /></ProtectedRoute>} />
 
-            <Route path="/unauthorized" element={<div className="flex items-center justify-center h-screen"><p className="text-muted-foreground">Unauthorized access.</p></div>} />
+            <Route path="/unauthorized" element={
+              <div className="flex flex-col items-center justify-center h-screen gap-4">
+                <p className="text-muted-foreground text-lg">Unauthorized access.</p>
+                <p className="text-muted-foreground text-sm">You don't have permission to view this page.</p>
+                <div className="flex gap-3">
+                  <a href="/login" className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition">Go to Login</a>
+                  <button onClick={() => window.history.back()} className="px-4 py-2 rounded-lg border border-border hover:bg-accent transition">Go Back</button>
+                </div>
+              </div>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

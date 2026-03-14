@@ -62,9 +62,10 @@ const Patients = () => {
     } catch { } finally { setSaving(false); }
   };
 
-  const filtered = patients.filter(p =>
-    p.fullName?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = patients.filter(p => {
+    const q = search.toLowerCase();
+    return p.fullName?.toLowerCase().includes(q) || p.patientCode?.toLowerCase().includes(q);
+  });
 
   return (
     <DashboardLayout title="Patient Management">
@@ -137,17 +138,17 @@ const Patients = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: "1px solid hsl(var(--border))" }}>
-                  {["Patient", "Gender", "Blood Group", "Phone", "Emergency Contact", "Actions"].map(h => (
+                  {["Patient", "Gender", "Blood Group", "Phone", "Hospital", "Status", "Actions"].map(h => (
                     <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading && (
-                  <tr><td colSpan={6} className="text-center py-12 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mx-auto" /></td></tr>
+                  <tr><td colSpan={7} className="text-center py-12 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mx-auto" /></td></tr>
                 )}
                 {!loading && filtered.length === 0 && (
-                  <tr><td colSpan={6} className="text-center py-12 text-muted-foreground">No patients found</td></tr>
+                  <tr><td colSpan={7} className="text-center py-12 text-muted-foreground">No patients found</td></tr>
                 )}
                 {filtered.map((p, i) => (
                   <motion.tr key={p.id ?? i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
@@ -168,9 +169,11 @@ const Patients = () => {
                     </td>
                     <td className="px-5 py-3.5 font-medium">{p.bloodGroup}</td>
                     <td className="px-5 py-3.5 text-muted-foreground">{p.phone}</td>
-                    <td className="px-5 py-3.5 text-muted-foreground">
-                      <div>{p.emergencyContact}</div>
-                      {p.emergencyPhone && <div className="text-xs">{p.emergencyPhone}</div>}
+                    <td className="px-5 py-3.5 text-muted-foreground text-xs">{p.hospitalName || "—"}</td>
+                    <td className="px-5 py-3.5">
+                      <Badge variant={p.isActive ? "default" : "secondary"} className={p.isActive ? "bg-success/15 text-success border-success/20 hover:bg-success/20" : ""}>
+                        {p.isActive ? "Active" : "Inactive"}
+                      </Badge>
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1">

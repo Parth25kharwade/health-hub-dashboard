@@ -1,12 +1,62 @@
 import api from "./api";
 
 export interface DiagnosisInput {
+  patientId?: number;
   symptoms: string[];
-  vitals: { temperature: number; systolicBp: number; diastolicBp: number; heartRate: number; oxygenSaturation: number };
-  labReport: { plateletCount: number; hemoglobin: number; bloodSugar: number; wbcCount: number };
-  patientId?: string;
+  vitals: {
+    temperature: number;
+    systolicBp: number;
+    diastolicBp: number;
+    heartRate: number;
+    oxygenSaturation: number;
+    respiratoryRate?: number;
+  };
+  labReport: {
+    hemoglobin?: number;
+    plateletCount?: number;
+    wbcCount?: number;
+    bloodSugar?: number;
+    creatinine?: number;
+    bilirubin?: number;
+    alt?: number;
+    reportDate?: string;
+  } | null;
 }
 
-export const analyzeDiagnosis = (data: DiagnosisInput) => api.post("/diagnosis/analyze", data);
+export interface DiagnosisResult {
+  patientId: number;
+  patientName: string;
+  riskScore: number;
+  riskLevel: string;
+  suspectedConditions: string[];
+  diagnosticAlerts: string[];
+  recommendations: string[];
+  analyzedAt: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  timestamp: string;
+}
+
+export const analyzeDiagnosis = (data: DiagnosisInput) =>
+  api.post<ApiResponse<DiagnosisResult>>("/diagnosis/analyze", data);
+
 export const getDiagnosisAlerts = () => api.get("/diagnosis/alerts/doctor");
-export const getDiagnosisHistory = (patientId: string) => api.get(`/diagnosis/patient/${patientId}/history`);
+
+export interface DiagnosisHistoryItem {
+  id: number;
+  patientId: number;
+  patientName: string;
+  riskScore: number;
+  riskLevel: string;
+  suspectedConditions: string;
+  diagnosticAlerts: string;
+  recommendations: string;
+  analyzedAt: string;
+}
+
+export const getDiagnosisHistory = (patientId: string | number) =>
+  api.get<ApiResponse<DiagnosisHistoryItem[]>>(`/diagnosis/patient/${patientId}/history`);

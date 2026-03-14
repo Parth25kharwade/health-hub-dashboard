@@ -10,7 +10,9 @@ const ProtectedRoute = ({ children, allowedRoles }: Props) => {
 
   if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" replace />;
+    // Redirect to the user's correct dashboard instead of a dead-end page
+    const correctPath = user.role === "ROLE_DOCTOR" ? "/doctor/dashboard" : user.role === "ROLE_ADMIN" ? "/admin/dashboard" : "/login";
+    return <Navigate to={correctPath} replace />;
   }
   return <>{children}</>;
 };
