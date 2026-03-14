@@ -16,6 +16,7 @@ import Patients from "@/pages/doctor/Patients";
 import PatientHistory from "@/pages/doctor/PatientHistory";
 import CreateRecord from "@/pages/doctor/CreateRecord";
 import AIDiagnosis from "@/pages/doctor/AIDiagnosis";
+import GeminiAnalysis from "@/pages/doctor/GeminiAnalysis";
 import Alerts from "@/pages/doctor/Alerts";
 
 // Admin pages
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/doctor/history" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><PatientHistory /></ProtectedRoute>} />
             <Route path="/doctor/records/new" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><CreateRecord /></ProtectedRoute>} />
             <Route path="/doctor/ai-diagnosis" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><AIDiagnosis /></ProtectedRoute>} />
+            <Route path="/doctor/gemini-ai" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><GeminiAnalysis /></ProtectedRoute>} />
             <Route path="/doctor/alerts" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><Alerts /></ProtectedRoute>} />
 
             {/* Admin routes */}

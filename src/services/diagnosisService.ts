@@ -60,3 +60,18 @@ export interface DiagnosisHistoryItem {
 
 export const getDiagnosisHistory = (patientId: string | number) =>
   api.get<ApiResponse<DiagnosisHistoryItem[]>>(`/diagnosis/patient/${patientId}/history`);
+
+// --- Gemini AI Lab Report Explainer ---
+export interface ExplainLabInput {
+  patientId: number;
+  labReport: {
+    hemoglobin?: number;
+    plateletCount?: number;
+    whiteBloodCellCount?: number;
+    bloodSugar?: number;
+    cholesterol?: number;
+  };
+}
+
+export const explainLabReport = (data: ExplainLabInput) =>
+  api.post<string>("/ai/explain-lab", data);

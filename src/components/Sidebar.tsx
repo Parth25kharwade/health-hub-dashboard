@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, Brain, History, Bell, BedDouble,
   UserCheck, TrendingUp, BarChart2, LogOut, Activity, ChevronRight,
-  Stethoscope, FilePlus
+  Stethoscope, FilePlus, Sparkles
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +14,7 @@ const doctorNav = [
   { to: "/doctor/patients", label: "Patients", icon: Users },
   { to: "/doctor/records/new", label: "Add Record", icon: FilePlus },
   { to: "/doctor/ai-diagnosis", label: "AI Diagnosis", icon: Brain },
+  { to: "/doctor/gemini-ai", label: "Lab Explainer", icon: Sparkles },
   { to: "/doctor/history", label: "Patient History", icon: History },
   { to: "/doctor/alerts", label: "Alerts", icon: Bell },
 ];
