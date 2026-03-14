@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { ResourceProvider } from "@/context/ResourceContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Auth
@@ -59,12 +60,20 @@ const App = () => (
             <Route path="/doctor/gemini-ai" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><GeminiAnalysis /></ProtectedRoute>} />
             <Route path="/doctor/alerts" element={<ProtectedRoute allowedRoles={["ROLE_DOCTOR"]}><Alerts /></ProtectedRoute>} />
 
-            {/* Admin routes */}
-            <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/icu" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><IcuManagement /></ProtectedRoute>} />
-            <Route path="/admin/staff" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><StaffManagement /></ProtectedRoute>} />
-            <Route path="/admin/prediction" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><ResourcePrediction /></ProtectedRoute>} />
-            <Route path="/admin/forecast" element={<ProtectedRoute allowedRoles={["ROLE_ADMIN"]}><ForecastHistory /></ProtectedRoute>} />
+            {/* Admin routes — all wrapped in ResourceProvider for shared live staff state */}
+            <Route path="/admin/*" element={
+              <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+                <ResourceProvider>
+                  <Routes>
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="icu" element={<IcuManagement />} />
+                    <Route path="staff" element={<StaffManagement />} />
+                    <Route path="prediction" element={<ResourcePrediction />} />
+                    <Route path="forecast" element={<ForecastHistory />} />
+                  </Routes>
+                </ResourceProvider>
+              </ProtectedRoute>
+            } />
 
             <Route path="/unauthorized" element={
               <div className="flex flex-col items-center justify-center h-screen gap-4">
