@@ -37,8 +37,25 @@ const RootRedirect = () => {
   return <Navigate to={user?.role === "ROLE_DOCTOR" ? "/doctor/dashboard" : "/admin/dashboard"} replace />;
 };
 
+import { useEffect } from "react";
+
+const ThemeInit = () => {
+  useEffect(() => {
+    const t = localStorage.getItem("theme-preference") || "dark";
+    const root = document.documentElement;
+    if (t === "dark") root.classList.add("dark");
+    else if (t === "light") root.classList.remove("dark");
+    else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      prefersDark ? root.classList.add("dark") : root.classList.remove("dark");
+    }
+  }, []);
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeInit />
     <TooltipProvider>
       <Toaster />
       <Sonner />

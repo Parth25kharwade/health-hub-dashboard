@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -16,14 +16,20 @@ interface Notification {
   read: boolean;
 }
 
-const INITIAL_NOTIFS: Notification[] = [
-  { id: 1, type: "critical", title: "Critical Alert", body: "Alice Johnson — Blood pressure: 185/115 mmHg. Immediate attention required.", time: "2 min ago", read: false },
+const ADMIN_NOTIFS: Notification[] = [
+  { id: 1, type: "critical", title: "ICU Capacity Critical", body: "ICU occupancy has reached 95%. Only 1 bed remaining. Action required.", time: "5 min ago", read: false },
+  { id: 2, type: "warning", title: "Resource Shortage Prediction", body: "Oxygen supply predicted to be critical in 12 hours based on current consumption rates.", time: "18 min ago", read: false },
+  { id: 3, type: "info", title: "Staff Shift Update", body: "Dr. Smith and Dr. Lee have clocked in for the night shift.", time: "1 hr ago", read: true },
+  { id: 4, type: "success", title: "Weekly Forecast Ready", body: "Resource utilization forecast for next week has been generated successfully.", time: "2 hrs ago", read: true },
+  { id: 5, type: "info", title: "System Update", body: "MedCare platform updated to v2.4.1. New modules available.", time: "5 hrs ago", read: true },
+];
+
+const DOCTOR_NOTIFS: Notification[] = [
+  { id: 1, type: "critical", title: "Critical Patient Alert", body: "Alice Johnson — Blood pressure: 185/115 mmHg. Immediate attention required.", time: "2 min ago", read: false },
   { id: 2, type: "critical", title: "Low O₂ Saturation", body: "Bob Smith — Oxygen saturation dropped to 87%. ICU team notified.", time: "8 min ago", read: false },
   { id: 3, type: "warning", title: "High Blood Sugar", body: "Carol White — Blood glucose at 290 mg/dL. Insulin adjustment needed.", time: "22 min ago", read: false },
   { id: 4, type: "info", title: "New Patient Assigned", body: "David Brown has been assigned to your care. Review intake notes.", time: "1 hr ago", read: true },
   { id: 5, type: "success", title: "Lab Report Ready", body: "Eve Davis — Complete blood panel results are now available.", time: "2 hrs ago", read: true },
-  { id: 6, type: "warning", title: "ICU Capacity Warning", body: "ICU occupancy at 91% — 2 beds remaining. Consider patient transfers.", time: "3 hrs ago", read: true },
-  { id: 7, type: "info", title: "System Update", body: "MedCare platform updated to v2.4.1. New AI diagnosis features available.", time: "5 hrs ago", read: true },
 ];
 
 const typeConfig = {
@@ -39,7 +45,15 @@ interface Props {
 }
 
 const NotificationBell = ({ open, onOpenChange }: Props) => {
-  const [notifs, setNotifs] = useState<Notification[]>(INITIAL_NOTIFS);
+  const { user } = useAuth();
+  // Choose notifications based on role
+  const initialNotifs = user?.role === "ROLE_ADMIN" ? ADMIN_NOTIFS : DOCTOR_NOTIFS;
+  const [notifs, setNotifs] = useState<Notification[]>(initialNotifs);
+
+  // Auto-update if user switches role without page refresh
+  useEffect(() => {
+    setNotifs(user?.role === "ROLE_ADMIN" ? ADMIN_NOTIFS : DOCTOR_NOTIFS);
+  }, [user?.role]);
 
   const unread = notifs.filter(n => !n.read).length;
 
@@ -69,9 +83,9 @@ const NotificationBell = ({ open, onOpenChange }: Props) => {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" sideOffset={8} className="w-[380px] p-0 shadow-2xl border border-border rounded-xl overflow-hidden">
+      <PopoverContent align="end" sideOffset={8} className="w-[380px] p-0 shadow-2xl border border-border rounded-xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card shrink-0 rounded-t-xl">
           <div className="flex items-center gap-2">
             <h3 className="font-display font-semibold text-sm">Notifications</h3>
             {unread > 0 && (
@@ -93,7 +107,7 @@ const NotificationBell = ({ open, onOpenChange }: Props) => {
         </div>
 
         {/* Notifications list */}
-        <ScrollArea className="max-h-[420px]">
+        <ScrollArea className="flex-1 max-h-[420px] overflow-y-auto w-full">
           {notifs.length === 0 ? (
             <div className="flex flex-col items-center py-12 text-center">
               <BellOff className="w-10 h-10 text-muted-foreground/30 mb-3" />

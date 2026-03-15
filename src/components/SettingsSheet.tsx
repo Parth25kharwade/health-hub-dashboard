@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -19,7 +19,9 @@ interface Props {
 type Theme = "system" | "light" | "dark";
 
 const SettingsSheet = ({ open, onClose }: Props) => {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>(() => {
+    return (localStorage.getItem("theme-preference") as Theme) || "dark";
+  });
   const [language, setLanguage] = useState("en");
   const [saved, setSaved] = useState(false);
 
@@ -37,8 +39,13 @@ const SettingsSheet = ({ open, onClose }: Props) => {
     activityLog: true,
   });
 
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
   const applyTheme = (t: Theme) => {
     setTheme(t);
+    localStorage.setItem("theme-preference", t);
     const root = document.documentElement;
     if (t === "dark") root.classList.add("dark");
     else if (t === "light") root.classList.remove("dark");
